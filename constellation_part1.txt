@@ -1,0 +1,50 @@
+        {activeMainTab === 'constellation' && (() => {
+        
+            const consumedMoviesOrTv = (userItems || []).filter(i => {
+                const catStr = i.category as string;
+                return (catStr === 'movie' || catStr === 'tv' || catStr === 'watch') && ['completed', 'read', 'watched'].includes(i.status);
+            });
+            const totalRuntimeMinutes = consumedMoviesOrTv.reduce((acc, curr: any) => acc + (curr.runtime || 0), 0);
+            const totalRuntimeHours = Math.round(totalRuntimeMinutes / 60);
+
+            const consumedBooks = (userItems || []).filter(i => {
+                const catStr = i.category as string;
+                return (catStr === 'book' || catStr === 'books') && ['completed', 'read'].includes(i.status);
+            });
+            const totalPages = consumedBooks.reduce((acc, curr: any) => acc + (curr.pages || curr.pageCount || 0), 0);
+
+            const totalItems = userItems?.length || 0;
+            const completedItems = (userItems || []).filter(i => ['completed', 'read', 'watched', 'listened', 'tried'].includes(i.status)).length;
+            const lovedItems = (userItems || []).filter(i => i.reaction === 'love').length;
+            const aspirationalItems = (userItems || []).filter(i => ['up-next', 'planning', 'want-to-try', 'saved'].includes(i.status)).length;
+            const reviewsWritten = (userItems || []).filter(i => (i.review && i.review.trim().length > 0) || (i.favoriteQuote && i.favoriteQuote.trim().length > 0)).length;
+            const pre2000Items = (userItems || []).filter(i => {
+                const itemYear = i.metadata?.year || parseInt((i.title.match(/\b(19|20)\d{2}\b/) || [])[0] || '0') || Number(i.releaseYear) || 0;
+                return itemYear > 0 && itemYear < 2000;
+            }).length;
+
+            const positivityRatio = completedItems > 0 ? Math.round((lovedItems / completedItems) * 100) : 0;
+            const backlogRatio = totalItems > 0 ? Math.round((aspirationalItems / totalItems) * 100) : 0;
+
+            const categoryCounts = (userItems || []).reduce((acc: any, item) => {
+               const cat = item.category || 'other';
+               acc[cat] = (acc[cat] || 0) + 1;
+               return acc;
+            }, {});
+            
+            const sortedCategories = Object.entries(categoryCounts).sort((a: any, b: any) => b[1] - a[1]);
+
+            // Era Data
+            const eraDistribution = (userItems || []).reduce((acc: any, i: any) => {
+                const year = i.metadata?.year || parseInt((i.title.match(/\b(19|20)\d{2}\b/) || [])[0] || '0') || Number(i.releaseYear);
+                if (year > 1900 && year <= new Date().getFullYear()) {
+                    const decade = Math.floor(year / 10) * 10;
+                    acc[decade] = (acc[decade] || 0) + 1;
+                }
+                return acc;
+            }, {});
+            
+            const eraChartData = Object.entries(eraDistribution)
+                .map(([decade, count]) => ({ decade: `${decade}s`, count }))
+                .sort((a: any, b: any) => parseInt(a.decade) - parseInt(b.decade));
+

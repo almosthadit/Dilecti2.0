@@ -1,0 +1,20 @@
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+
+# Exclude massive seed data and zip files to prevent GitHub upload crashes
+.dilecti_seed_pack/
+dilecti_seed_pack/
+*.zip
+output.json
+empty.json
+search_result*.json
+
+# Ignore antigravity logs
+.antigravity/
+

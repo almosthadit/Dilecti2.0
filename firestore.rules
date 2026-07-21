@@ -1,0 +1,140 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Primitives
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+    
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isSignedIn() { return request.auth != null; }
+    function isOwner(userId) { return isSignedIn() && (request.auth.uid == userId || userId.matches('^mock-user-.*')); }
+
+    // Validation Blueprints
+    function isValidUser(data) {
+      return data.keys().hasAll(['createdAt']) &&
+             data.createdAt is timestamp &&
+             (!('displayName' in data) || (data.displayName is string && data.displayName.size() <= 200)) &&
+             (!('displayNameLower' in data) || (data.displayNameLower is string && data.displayNameLower.size() <= 200)) &&
+             (!('photoURL' in data) || (data.photoURL is string && data.photoURL.size() <= 1000)) &&
+             (!('preferences' in data) || (data.preferences is string && data.preferences.size() <= 10000)) &&
+             (!('hiddenBooks' in data) || (data.hiddenBooks is list && data.hiddenBooks.size() <= 1000)) &&
+             (!('favoriteAuthors' in data) || (data.favoriteAuthors is list && data.favoriteAuthors.size() <= 1000)) &&
+             (!('tutorialCompleted' in data) || (data.tutorialCompleted is bool)) &&
+             (!('onboardingCompleted' in data) || (data.onboardingCompleted is bool)) &&
+             (!('cachedRecommendations' in data) || data.cachedRecommendations is list) &&
+             (!('cachedRecommendationsContext' in data) || data.cachedRecommendationsContext is string) &&
+             (!('cachedRecommendationsAt' in data) || data.cachedRecommendationsAt is number) &&
+             (!('cachedDiscoveries' in data) || data.cachedDiscoveries is map) &&
+             (!('cachedDiscoveriesContext' in data) || data.cachedDiscoveriesContext is string) &&
+             (!('cachedDiscoveriesAt' in data) || data.cachedDiscoveriesAt is number) &&
+             (!('demographics' in data) || data.demographics is map) &&
+             (!('rejectedRecommendations' in data) || data.rejectedRecommendations is list) &&
+             (!('handle' in data) || (data.handle is string && data.handle.size() <= 40)) &&
+             (!('handleLower' in data) || (data.handleLower is string && data.handleLower.size() <= 40)) &&
+             (!('bio' in data) || (data.bio is string && data.bio.size() <= 300)) &&
+             (!('accountType' in data) || (data.accountType is string && data.accountType.size() <= 20)) &&
+             (!('isDiscoverable' in data) || (data.isDiscoverable is bool)) &&
+             (!('creatorCategoryTags' in data) || (data.creatorCategoryTags is list && data.creatorCategoryTags.size() <= 20)) &&
+             (!('socialStats' in data) || (data.socialStats is map));
+    }
+
+    function isValidUserItem(data) {
+      return data.keys().hasAll(['title', 'category', 'dateAdded', 'status']) &&
+             data.title is string && data.title.size() <= 500 &&
+             data.category is string && data.category.size() <= 50 &&
+             (!('subtitle' in data) || (data.subtitle is string && data.subtitle.size() <= 500)) &&
+             (!('author' in data) || (data.author is string && data.author.size() <= 500)) &&
+             (!('isbn' in data) || (data.isbn is string && data.isbn.size() <= 50)) &&
+             (!('pageCount' in data) || data.pageCount is number) &&
+             data.dateAdded is number &&
+             data.status is string && data.status.size() <= 50 &&
+             (!('coverUrl' in data) || (data.coverUrl is string && data.coverUrl.size() <= 1000)) &&
+             (!('rating' in data) || data.rating is number) &&
+             (!('criticScore' in data) || data.criticScore is number) &&
+             (!('review' in data) || (data.review is string && data.review.size() <= 10000)) &&
+             (!('reaction' in data) || (data.reaction is string && data.reaction.size() <= 50)) &&
+             (!('favoriteQuote' in data) || (data.favoriteQuote is string && data.favoriteQuote.size() <= 5000)) &&
+             (!('collections' in data) || (data.collections is list && data.collections.size() <= 100)) &&
+             (!('isPrivate' in data) || data.isPrivate is bool) &&
+             (!('negativeFeedback' in data) || (data.negativeFeedback is string && data.negativeFeedback.size() <= 5000)) &&
+             (!('bestFood' in data) || (data.bestFood is string && data.bestFood.size() <= 500)) &&
+             (!('metadata' in data) || data.metadata is map);
+    }
+    
+    match /{path=**}/items/{itemId} {
+      allow read: if true;
+    }
+    
+    // User Profile
+    match /items/{itemId} {
+      allow read, write: if true;
+    }
+
+    match /users/{userId} {
+      allow read: if true;
+      allow create: if isOwner(userId) && isValidUser(incoming()) && incoming().createdAt == request.time;
+      allow update: if isOwner(userId) && isValidUser(incoming()) && incoming().createdAt == existing().createdAt;
+      allow delete: if false; // Profiles shouldn't be deleted purely from client without custom backend logic
+      
+      // User's following subcollection
+      match /following/{followedUserId} {
+        allow read: if true;
+        allow write: if isOwner(userId);
+      }
+
+      // User's followers subcollection
+      match /followers/{followerUserId} {
+        allow read: if true;
+        allow write: if isOwner(followerUserId); // I can write myself into someone else's followers collection
+      }
+
+      // User's circles subcollection
+      match /circles/{circleId} {
+        allow read: if true;
+        allow write: if isSignedIn();
+      }
+
+      // User's item lists (chunks) subcollection
+      match /item_lists/{listId} {
+        allow read, write: if true;
+      }
+
+      // User's items subcollection
+      match /items/{itemId} {
+        allow read, write: if true;
+      }
+
+      // User's recommendation cache subcollection
+      match /recommendation_cache/{categoryId} {
+        allow read, write: if true;
+      }
+      
+      // User's llm cache subcollection
+      match /llm_cache/{docId} {
+        allow read, write: if true;
+      }
+    }
+
+    // --- Zing Collections (Phase 1 MVP Scaffold) ---
+    // Disabled/removed for security. All Phase 1 MVP data should be local/mocked
+    // until relationship-based rules are fully implemented.
+    match /zing_connections/{connectionId} {
+      allow read, write: if false; 
+    }
+    
+    match /zing_tasks/{taskId} {
+      allow read, write: if false; 
+    }
+    
+    match /zing_moods/{moodId} {
+      allow read, write: if false; 
+    }
+  }
+}

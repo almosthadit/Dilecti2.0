@@ -1,0 +1,9 @@
+* Host localhost:3000 was resolved.
+* IPv6: ::1
+* IPv4: 127.0.0.1
+*   Trying [::1]:3000...
+* Immediate connect fail for ::1: Operation not permitted
+*   Trying 127.0.0.1:3000...
+* Immediate connect fail for 127.0.0.1: Operation not permitted
+* Failed to connect to localhost port 3000 after 0 ms: Couldn't connect to server
+* Closing connection

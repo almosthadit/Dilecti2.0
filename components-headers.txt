@@ -1,0 +1,14 @@
+src/components/AITasteQuizModal.tsx:54:                headers: { "Content-Type": "application/json", "x-user-api-key": localStorage.getItem("user_gemini_api_key") || "", "x-user-ai-provider": localStorage.getItem("user_ai_provider") || "gemini" },
+src/components/CuratedForYouSection.tsx:46:        'x-user-api-key': localStorage.getItem('user_gemini_api_key') || '', 'x-user-ai-provider': localStorage.getItem('user_ai_provider') || 'gemini'
+src/components/CuratedForYouSection.tsx:123:        'x-user-api-key': localStorage.getItem('user_gemini_api_key') || '', 'x-user-ai-provider': localStorage.getItem('user_ai_provider') || 'gemini'
+src/components/ProfileTab.tsx:231:                  'x-user-api-key': localStorage.getItem('user_gemini_api_key') || '', 'x-user-ai-provider': localStorage.getItem('user_ai_provider') || 'gemini'
+src/components/TasteProfileGenerator.tsx:85:        headers: { "Content-Type": "application/json", "x-user-api-key": localStorage.getItem("user_gemini_api_key") || "", "x-user-ai-provider": localStorage.getItem("user_ai_provider") || "gemini" },
+src/components/TasteProfileGenerator.tsx:153:                      headers: { "Content-Type": "application/json", "x-user-api-key": localStorage.getItem("user_gemini_api_key") || "", "x-user-ai-provider": localStorage.getItem("user_ai_provider") || "gemini" },
+src/components/TasteProfileGenerator.tsx:211:                          headers: { "Content-Type": "application/json", "x-user-api-key": localStorage.getItem("user_gemini_api_key") || "", "x-user-ai-provider": localStorage.getItem("user_ai_provider") || "gemini" },
+src/components/ItemDetailModal.tsx:128:             headers: { "Content-Type": "application/json", "x-user-api-key": localStorage.getItem("user_gemini_api_key") || "", "x-user-ai-provider": localStorage.getItem("user_ai_provider") || "gemini" },
+src/components/SettingsModal.tsx:95:        setLocalGeminiKey(localStorage.getItem('user_gemini_api_key') || "");
+src/components/SettingsModal.tsx:103:        localStorage.removeItem('user_gemini_api_key');
+src/components/SettingsModal.tsx:105:        localStorage.setItem('user_gemini_api_key', key.trim());
+src/components/DiscoverTab.tsx:382:          headers: { "Content-Type": "application/json", "x-user-api-key": localStorage.getItem("user_gemini_api_key") || "", "x-user-ai-provider": localStorage.getItem("user_ai_provider") || "gemini" },
+src/components/DiscoverTab.tsx:517:             headers: { "Content-Type": "application/json", "x-user-api-key": localStorage.getItem("user_gemini_api_key") || "", "x-user-ai-provider": localStorage.getItem("user_ai_provider") || "gemini" },
+src/components/CategoryZone.tsx:112:              headers: { "Content-Type": "application/json", "x-user-api-key": localStorage.getItem("user_gemini_api_key") || "", "x-user-ai-provider": localStorage.getItem("user_ai_provider") || "gemini" },
