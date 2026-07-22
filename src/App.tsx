@@ -16,6 +16,7 @@ import StatsTab from './components/StatsTab';
 import LoginScreen from './components/LoginScreen';
 import { useUser } from './context/UserContext';
 import SplashScreen from './components/SplashScreen';
+import SeedAdmin from './components/SeedAdmin';
 import RichCriticPortalModal from './components/RichCriticPortalModal';
 import ItemDetailModal from './components/ItemDetailModal';
 import CreatorGraphModal from './components/CreatorGraphModal';
@@ -484,6 +485,7 @@ export default function App() {
             
             <Route path="earn" element={<EarnTab />} />
             <Route path="profile" element={<ProfileTab />} />
+            <Route path="admin/seed-import" element={<SeedAdmin />} />
 
             {/* Book Zone / Feyble */}
             <Route path="books/*" element={<Navigate to="/zone/books" replace />} />

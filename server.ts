@@ -2,6 +2,7 @@ import "dotenv/config";
 import { aiRouter } from "./src/routes/ai";
 import { libraryRouter } from "./src/routes/library";
 import { ingestionRouter } from "./src/routes/ingestion";
+import { adminRouter } from "./src/routes/admin.js";
 import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
@@ -15,12 +16,13 @@ import { createServer as createViteServer } from "vite";
 
 async function startServer() {
   const app = express();
-  const PORT = 3001;
+  const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 
   app.use(express.json({ limit: "50mb" }));
   app.use(aiRouter);
   app.use(libraryRouter);
   app.use(ingestionRouter);
+  app.use(adminRouter);
 
 
   // AI Trending Endpoint
