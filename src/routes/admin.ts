@@ -34,9 +34,14 @@ const dummyQuery = sql`
     AND description LIKE 'This is a recovered item for the % category.'
 `;
 
-adminRouter.post("/api/admin/seed-import-dryrun", async (req: AuthRequest, res: Response) => {
+adminRouter.post("/api/admin/seed-import-dryrun", requireAuth, async (req: AuthRequest, res: Response) => {
   try {
+    if (!req.user || req.user.email !== 'justinplappert@gmail.com' || !req.user.email_verified) {
+      return res.status(403).json({ error: "Forbidden: Admin access only" });
+    }
+
     // 1. Connection check
+
     const dbTest = await db.execute(sql`SELECT 1 as test`);
     if (dbTest.rows.length === 0) throw new Error("Connection test returned no rows.");
     const initialRowsQuery = await db.execute(sql`SELECT count(*) FROM global_items`);
@@ -123,8 +128,12 @@ adminRouter.post("/api/admin/seed-import-dryrun", async (req: AuthRequest, res: 
 });
 
 
-adminRouter.post("/api/admin/seed-import-apply", async (req: AuthRequest, res: Response) => {
+adminRouter.post("/api/admin/seed-import-apply", requireAuth, async (req: AuthRequest, res: Response) => {
   try {
+    if (!req.user || req.user.email !== 'justinplappert@gmail.com' || !req.user.email_verified) {
+      return res.status(403).json({ error: "Forbidden: Admin access only" });
+    }
+
     const dummyRecords = await db.execute(dummyQuery);
     
     // GCS Backup for Dummies
