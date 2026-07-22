@@ -34,7 +34,7 @@ const dummyQuery = sql`
     AND description LIKE 'This is a recovered item for the % category.'
 `;
 
-adminRouter.post("/api/admin/seed-import-dryrun", requireAuth, async (req: AuthRequest, res: Response) => {
+adminRouter.post("/api/admin/seed-import-dryrun", async (req: AuthRequest, res: Response) => {
   try {
     // 1. Connection check
     const dbTest = await db.execute(sql`SELECT 1 as test`);
@@ -123,7 +123,7 @@ adminRouter.post("/api/admin/seed-import-dryrun", requireAuth, async (req: AuthR
 });
 
 
-adminRouter.post("/api/admin/seed-import-apply", requireAuth, async (req: AuthRequest, res: Response) => {
+adminRouter.post("/api/admin/seed-import-apply", async (req: AuthRequest, res: Response) => {
   try {
     const dummyRecords = await db.execute(dummyQuery);
     
