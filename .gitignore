@@ -11,6 +11,7 @@ coverage/
 .dilecti_seed_pack/
 dilecti_seed_pack/
 *.zip
+!dilecti_9202_plus_upcoming_releases_seed_pack.zip
 output.json
 empty.json
 search_result*.json
